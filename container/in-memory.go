@@ -1,21 +1,30 @@
 package container
 
-import "blog/blog"
+import (
+	"github.com/stoyaneft/blog/blog"
+)
 
 type InMemory struct {
-	posts map[int64]*blog.Post
+	id    int64
+	posts map[int64]blog.Post
 }
 
 func NewInMemory() InMemory {
 	return InMemory{
-		posts: map[int64]*blog.Post{},
+		id:    int64(1),
+		posts: map[int64]blog.Post{},
 	}
+}
+
+// Connect implements blog.Container.
+func (c *InMemory) Connect() error {
+	return nil
 }
 
 // GetAll implements blog.Container.
 func (c *InMemory) GetAll() ([]blog.Post, error) {
-	posts := make([]blog.Post, len(c.posts))
-	for _, post := range posts {
+	posts := []blog.Post{}
+	for _, post := range c.posts {
 		posts = append(posts, post)
 	}
 	return posts, nil
@@ -23,7 +32,9 @@ func (c *InMemory) GetAll() ([]blog.Post, error) {
 
 // Insert implements blog.Container.
 func (c *InMemory) Insert(post *blog.Post) error {
-	c.posts[post.ID] = post
+	post.ID = c.id
+	c.id++
+	c.posts[post.ID] = *post
 	return nil
 }
 

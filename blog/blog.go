@@ -1,19 +1,20 @@
 package blog
 
 type Post struct {
-	ID int64
-	Author string     
-	Content string
-	Likes int64
+	ID       int64
+	Author   string
+	Content  string
+	Likes    int64
 	Comments []Comment
 }
 
 type Comment struct {
-	Author string        
+	Author  string
 	Content string
 }
 
 type PostContainer interface {
+	Connect() error
 	GetAll() ([]Post, error)
 	Insert(*Post) error
 	Delete(int64) error
@@ -24,7 +25,7 @@ type Blog struct {
 }
 
 func New(posts PostContainer) *Blog {
-	return &Blog {
+	return &Blog{
 		posts: posts,
 	}
 }
