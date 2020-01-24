@@ -1,0 +1,26 @@
+<html>
+
+<head>
+    <title>Golang blog</title>
+    <style>
+        .post {
+            max-width: 640px;
+            margin: 0 64px;
+            align-content: center;
+        }
+
+        .author {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Blog posts</h1>
+    {{range .}}
+    <div class="author">{{.Author}}</div>
+    <div class="post">{{.Content}}</div>
+    {{end}}
+</body>
+
+</html>
