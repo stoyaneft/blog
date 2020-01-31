@@ -31,18 +31,18 @@ func (c *MySQLStore) Init() error {
 // GetAll implements blog.Container.
 func (c *MySQLStore) GetAll() ([]blog.Post, error) {
 	if c.client == nil {
-		return nil, fmt.Errorf("mysql store is not connected")
+		return nil, fmt.Errorf("mysql store is not initialized")
 	}
 
 	posts := []blog.Post{}
-	rows, err := c.client.Query("select id, author, content, likes from posts")
+	rows, err := c.client.Query("select id, heading, created_at, author, content, likes from posts")
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtains posts from mysql: %w", err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var result blog.Post
-		err := rows.Scan(&result.ID, &result.Author, &result.Content, &result.Likes)
+		err := rows.Scan(&result.ID, &result.Heading, &result.CreatedAt, &result.Author, &result.Content, &result.Likes)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan post: %w", err)
 		}
@@ -57,17 +57,18 @@ func (c *MySQLStore) GetAll() ([]blog.Post, error) {
 // Insert implements blog.Container.
 func (c *MySQLStore) Insert(post *blog.Post) error {
 	if c.client == nil {
-		return fmt.Errorf("mysql store is not connected")
+		return fmt.Errorf("mysql store is not initialized")
 	}
 
-	_, err := c.client.Exec("insert into posts(author, content, likes) VALUES (?, ?, ?)", post.Author, post.Content, post.Likes)
+	_, err := c.client.Exec("insert into posts(heading, author, content, likes, created_at) VALUES (?, ?, ?, ?, ?)",
+		post.Heading, post.Author, post.Content, post.Likes, post.CreatedAt)
 	return err
 }
 
 // Delete implements blog.Container.
 func (c *MySQLStore) Delete(id int64) error {
 	if c.client == nil {
-		return fmt.Errorf("mysql store is not connected")
+		return fmt.Errorf("mysql store is not initialized")
 	}
 
 	_, err := c.client.Exec("delete from posts where id=?", id)

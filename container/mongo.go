@@ -32,7 +32,7 @@ func (c *MongoStore) Init() error {
 // GetAll implements blog.Container.
 func (c *MongoStore) GetAll() ([]blog.Post, error) {
 	if c.client == nil {
-		return nil, fmt.Errorf("mongo store is not connected")
+		return nil, fmt.Errorf("mongo store is not initialized")
 	}
 
 	ctx := context.TODO()
@@ -60,7 +60,7 @@ func (c *MongoStore) GetAll() ([]blog.Post, error) {
 // Insert implements blog.Container.
 func (c *MongoStore) Insert(post *blog.Post) error {
 	if c.client == nil {
-		return fmt.Errorf("mongo store is not connected")
+		return fmt.Errorf("mongo store is not initialized")
 	}
 	_, err := c.collection().InsertOne(context.TODO(), post)
 	return err
@@ -69,7 +69,7 @@ func (c *MongoStore) Insert(post *blog.Post) error {
 // Delete implements blog.Container.
 func (c *MongoStore) Delete(id int64) error {
 	if c.client == nil {
-		return fmt.Errorf("mongo store is not connected")
+		return fmt.Errorf("mongo store is not initialized")
 	}
 
 	_, err := c.collection().DeleteOne(context.TODO(), bson.M{"id": id})

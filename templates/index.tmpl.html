@@ -3,24 +3,61 @@
 <head>
     <title>Golang blog</title>
     <style>
-        .post {
-            max-width: 640px;
-            margin: 0 64px;
-            align-content: center;
+        .header {
+            padding: 30px;
+            font-size: 40px;
+            text-align: center;
+            background: white;
+        }
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f1f1f1;
         }
 
-        .author {
-            font-weight: bold;
+        .card {
+            background-color: white;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .btn {
+            margin: 10px 10px;
+            background-color: #008CBA;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
         }
     </style>
 </head>
 
 <body>
-    <h1>Blog posts</h1>
-    {{range .}}
-    <div class="author">{{.Author}}</div>
-    <div class="post">{{.Content}}</div>
-    {{end}}
+    <div class="header">
+        <h2>Golang Blog</h2>
+    </div>
+    <div class="row">
+        <div class="post">
+            {{range .}}
+            <div class="card">
+                <h2>{{.Heading}}</h2>
+                <h5>{{.Author}}, {{.CreatedAt}}</h5>
+                <p>{{.Content}}</p>
+              </div>
+            {{end}}
+        </div>
+      </div>
+
+    <a class="btn" href="/create">New Post</a>
 </body>
 
 </html>

@@ -1,11 +1,15 @@
 package blog
 
+import "time"
+
 type Post struct {
-	ID       int64
-	Author   string
-	Content  string
-	Likes    int64
-	Comments []Comment
+	ID        int64
+	CreatedAt time.Time
+	Heading   string
+	Author    string
+	Content   string
+	Likes     int64
+	Comments  []Comment
 }
 
 type Comment struct {

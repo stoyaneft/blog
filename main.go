@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/stoyaneft/blog/blog"
 	"github.com/stoyaneft/blog/container"
@@ -53,9 +54,12 @@ func (s *rest) handleCreate(w http.ResponseWriter, r *http.Request) {
 func (s *rest) createPost(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	post := blog.Post{
-		Content: r.Form.Get("content"),
-		Author:  r.Form.Get("author"),
+		Content:   r.Form.Get("content"),
+		Author:    r.Form.Get("author"),
+		Heading:   r.Form.Get("heading"),
+		CreatedAt: time.Now(),
 	}
+	fmt.Printf("new post: %+v", post)
 	defer http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 
 	err := s.blog.NewPost(&post)
@@ -95,7 +99,7 @@ func main() {
 	}
 
 	container := container.NewMySQLStore(container.MySQLOptions{
-		URI: fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/blog", os.Getenv("DB_USER"), os.Getenv("DB_PASS")),
+		URI: fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/blog?parseTime=true", os.Getenv("DB_USER"), os.Getenv("DB_PASS")),
 	})
 	// container := container.NewMongoStore(container.MongoOptions{
 	// 	URI: "mongodb://localhost:27017",
