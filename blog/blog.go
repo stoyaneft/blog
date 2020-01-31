@@ -3,7 +3,7 @@ package blog
 import "time"
 
 type Post struct {
-	ID        int64
+	ID        string
 	CreatedAt time.Time
 	Heading   string
 	Author    string
@@ -20,7 +20,7 @@ type Comment struct {
 type PostContainer interface {
 	GetAll() ([]Post, error)
 	Insert(*Post) error
-	Delete(int64) error
+	Delete(string) error
 }
 
 type Blog struct {
@@ -41,6 +41,6 @@ func (b *Blog) NewPost(post *Post) error {
 	return b.posts.Insert(post)
 }
 
-func (b *Blog) DeletePost(id int64) error {
+func (b *Blog) DeletePost(id string) error {
 	return b.posts.Delete(id)
 }

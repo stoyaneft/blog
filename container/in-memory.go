@@ -1,20 +1,22 @@
 package container
 
 import (
-	"github.com/stoyaneft/blog/blog"
+	"strconv"
 	"sync"
+
+	"github.com/stoyaneft/blog/blog"
 )
 
 type InMemory struct {
 	id    int64
-	posts map[int64]blog.Post
+	posts map[string]blog.Post
 	mutex sync.RWMutex
 }
 
 func NewInMemory() InMemory {
 	return InMemory{
 		id:    int64(1),
-		posts: map[int64]blog.Post{},
+		posts: map[string]blog.Post{},
 		mutex: sync.RWMutex{},
 	}
 }
@@ -36,14 +38,14 @@ func (c *InMemory) Insert(post *blog.Post) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	post.ID = c.id
+	post.ID = strconv.FormatInt(c.id, 10)
 	c.id++
 	c.posts[post.ID] = *post
 	return nil
 }
 
 // Delete implements blog.Container.
-func (c *InMemory) Delete(id int64) error {
+func (c *InMemory) Delete(id string) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 

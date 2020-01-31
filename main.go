@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/stoyaneft/blog/blog"
@@ -52,6 +51,8 @@ func (s *rest) handleCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *rest) createPost(w http.ResponseWriter, r *http.Request) {
+	defer http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+
 	r.ParseForm()
 	post := blog.Post{
 		Content:   r.Form.Get("content"),
@@ -59,8 +60,6 @@ func (s *rest) createPost(w http.ResponseWriter, r *http.Request) {
 		Heading:   r.Form.Get("heading"),
 		CreatedAt: time.Now(),
 	}
-	fmt.Printf("new post: %+v", post)
-	defer http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 
 	err := s.blog.NewPost(&post)
 	if err != nil {
@@ -71,24 +70,20 @@ func (s *rest) createPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *rest) deletePost(w http.ResponseWriter, r *http.Request) {
+	defer http.Redirect(w, r, "/", http.StatusMovedPermanently)
+
 	idParams, ok := r.URL.Query()["id"]
 	if !ok || len(idParams) == 0 {
 		log.Printf("id is required")
 		return
 	}
-	id, err := strconv.ParseInt(idParams[0], 10, 64)
-	if err != nil {
-		log.Printf("wrong id request: %s", idParams[0])
-		return
-	}
-	err = s.blog.DeletePost(id)
+	id := idParams[0]
+	err := s.blog.DeletePost(id)
 	if err != nil {
 		log.Printf("failed to delete post: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Post deleted: %d", id)
 }
 
 func main() {
@@ -108,6 +103,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to init store: %s", err)
 	}
+	// container := container.NewInMemory()
 	blog := blog.New(&container)
 
 	rest := rest{

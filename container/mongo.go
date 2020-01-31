@@ -6,6 +6,7 @@ import (
 
 	"github.com/stoyaneft/blog/blog"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -67,12 +68,17 @@ func (c *MongoStore) Insert(post *blog.Post) error {
 }
 
 // Delete implements blog.Container.
-func (c *MongoStore) Delete(id int64) error {
+func (c *MongoStore) Delete(id string) error {
 	if c.client == nil {
 		return fmt.Errorf("mongo store is not initialized")
 	}
 
-	_, err := c.collection().DeleteOne(context.TODO(), bson.M{"id": id})
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return fmt.Errorf("failed to convert id to ObjectID")
+	}
+
+	_, err = c.collection().DeleteOne(context.TODO(), bson.M{"_id": objID})
 	return err
 }
 
