@@ -14,7 +14,6 @@ type Comment struct {
 }
 
 type PostContainer interface {
-	Connect() error
 	GetAll() ([]Post, error)
 	Insert(*Post) error
 	Delete(int64) error

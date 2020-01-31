@@ -3,7 +3,6 @@ package container
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/stoyaneft/blog/blog"
 	"go.mongodb.org/mongo-driver/bson"
@@ -24,7 +23,7 @@ func NewMongoStore(opts MongoOptions) MongoStore {
 	return MongoStore{client: nil, opts: opts}
 }
 
-func (c *MongoStore) Connect() error {
+func (c *MongoStore) Init() error {
 	var err error
 	c.client, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(c.opts.URI))
 	return err
@@ -73,7 +72,6 @@ func (c *MongoStore) Delete(id int64) error {
 		return fmt.Errorf("mongo store is not connected")
 	}
 
-	log.Printf("delete mongo recored: %d", id)
 	_, err := c.collection().DeleteOne(context.TODO(), bson.M{"id": id})
 	return err
 }

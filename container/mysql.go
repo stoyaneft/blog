@@ -2,7 +2,6 @@ package container
 
 import (
 	"fmt"
-	"log"
 
 	"database/sql"
 
@@ -23,8 +22,7 @@ func NewMySQLStore(opts MySQLOptions) MySQLStore {
 	return MySQLStore{client: nil, opts: opts}
 }
 
-// Connect implements blog.Container.
-func (c *MySQLStore) Connect() error {
+func (c *MySQLStore) Init() error {
 	var err error
 	c.client, err = sql.Open("mysql", c.opts.URI)
 	return err
@@ -72,7 +70,6 @@ func (c *MySQLStore) Delete(id int64) error {
 		return fmt.Errorf("mysql store is not connected")
 	}
 
-	log.Printf("delete mysql record: %d", id)
 	_, err := c.client.Exec("delete from posts where id=?", id)
 	return err
 }

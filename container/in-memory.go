@@ -16,11 +16,6 @@ func NewInMemory() InMemory {
 	}
 }
 
-// Connect implements blog.Container.
-func (c *InMemory) Connect() error {
-	return nil
-}
-
 // GetAll implements blog.Container.
 func (c *InMemory) GetAll() ([]blog.Post, error) {
 	posts := []blog.Post{}

@@ -42,13 +42,11 @@ func (s *rest) handleMain(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	t := template.Must(template.ParseFiles("./templates/index.tmpl.html"))
-	// fmt.Printf("posts: %+v\n", posts)
 	t.Execute(w, posts)
 }
 
 func (s *rest) handleCreate(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("./templates/create.tmpl.html"))
-	// fmt.Printf("posts: %+v\n", posts)
 	t.Execute(w, struct{}{})
 }
 
@@ -62,7 +60,7 @@ func (s *rest) createPost(w http.ResponseWriter, r *http.Request) {
 
 	err := s.blog.NewPost(&post)
 	if err != nil {
-		log.Printf("failed to insert post: %w", err)
+		log.Printf("failed to insert post: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -81,10 +79,11 @@ func (s *rest) deletePost(w http.ResponseWriter, r *http.Request) {
 	}
 	err = s.blog.DeletePost(id)
 	if err != nil {
-		log.Printf("failed to delete post: %w", err)
+		log.Printf("failed to delete post: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Post deleted: %d", id)
 }
 
@@ -94,8 +93,6 @@ func main() {
 		Addr:    ":8080",
 		Handler: mux,
 	}
-	// ctx, cancel := context.WithCancel(context.Background())
-	// defer cancel()
 
 	container := container.NewMySQLStore(container.MySQLOptions{
 		URI: fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/blog", os.Getenv("DB_USER"), os.Getenv("DB_PASS")),
@@ -103,9 +100,9 @@ func main() {
 	// container := container.NewMongoStore(container.MongoOptions{
 	// 	URI: "mongodb://localhost:27017",
 	// })
-	err := container.Connect()
+	err := container.Init()
 	if err != nil {
-		log.Fatal("failed to connect to store: %w", err)
+		log.Fatalf("failed to init store: %s", err)
 	}
 	blog := blog.New(&container)
 
