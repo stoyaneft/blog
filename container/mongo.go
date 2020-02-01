@@ -6,7 +6,6 @@ import (
 
 	"github.com/stoyaneft/blog/blog"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -73,12 +72,7 @@ func (c *MongoStore) Delete(id string) error {
 		return fmt.Errorf("mongo store is not initialized")
 	}
 
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return fmt.Errorf("failed to convert id to ObjectID")
-	}
-
-	_, err = c.collection().DeleteOne(context.TODO(), bson.M{"_id": objID})
+	_, err := c.collection().DeleteOne(context.TODO(), bson.M{"id": id})
 	return err
 }
 

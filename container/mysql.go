@@ -2,7 +2,6 @@ package container
 
 import (
 	"fmt"
-	"strconv"
 
 	"database/sql"
 
@@ -36,7 +35,6 @@ func (c *MySQLStore) GetAll() ([]blog.Post, error) {
 	}
 
 	posts := []blog.Post{}
-	var id int64
 	rows, err := c.client.Query("select id, heading, created_at, author, content, likes from posts")
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtains posts from mysql: %w", err)
@@ -44,11 +42,10 @@ func (c *MySQLStore) GetAll() ([]blog.Post, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var result blog.Post
-		err := rows.Scan(&id, &result.Heading, &result.CreatedAt, &result.Author, &result.Content, &result.Likes)
+		err := rows.Scan(&result.ID, &result.Heading, &result.CreatedAt, &result.Author, &result.Content, &result.Likes)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan post: %w", err)
 		}
-		result.ID = strconv.FormatInt(id, 10)
 		posts = append(posts, result)
 	}
 	if err := rows.Err(); err != nil {
@@ -63,8 +60,8 @@ func (c *MySQLStore) Insert(post *blog.Post) error {
 		return fmt.Errorf("mysql store is not initialized")
 	}
 
-	_, err := c.client.Exec("insert into posts(heading, author, content, likes, created_at) VALUES (?, ?, ?, ?, ?)",
-		post.Heading, post.Author, post.Content, post.Likes, post.CreatedAt)
+	_, err := c.client.Exec("insert into posts(id, heading, author, content, likes, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+		post.ID, post.Heading, post.Author, post.Content, post.Likes, post.CreatedAt)
 	return err
 }
 
